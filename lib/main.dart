@@ -20,24 +20,63 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class CameraHome extends StatelessWidget {
+class CameraHome extends StatefulWidget {
   final List<CameraDescription> cameras;
 
   const CameraHome({Key? key, required this.cameras}) : super(key: key);
 
   @override
+  _CameraHomeState createState() => _CameraHomeState();
+}
+
+class _CameraHomeState extends State<CameraHome> {
+  late CameraDescription selectedCamera;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCamera = widget.cameras.first;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Camera Picker Example')),
       body: Center(
-        child: ElevatedButton(
-          child: const Text('Open'),
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => CameraPreviewScreen(cameras: cameras),
-              ),
-            );
-          },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            DropdownButton<CameraDescription>(
+              value: selectedCamera,
+              onChanged: (CameraDescription? newCamera) {
+                setState(() {
+                  selectedCamera = newCamera!;
+                });
+              },
+              items: widget.cameras.map((camera) {
+                return DropdownMenuItem<CameraDescription>(
+                  value: camera,
+                  child: Text(
+                    camera.lensDirection == CameraLensDirection.front
+                        ? 'Front Camera'
+                        : 'Rear Camera',
+                  ),
+                );
+              }).toList(),
+            ),
+            ElevatedButton(
+              child: const Text('Open'),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => CameraPreviewScreen(
+                      camera: selectedCamera,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -45,9 +84,9 @@ class CameraHome extends StatelessWidget {
 }
 
 class CameraPreviewScreen extends StatefulWidget {
-  final List<CameraDescription> cameras;
+  final CameraDescription camera;
 
-  const CameraPreviewScreen({Key? key, required this.cameras}) : super(key: key);
+  const CameraPreviewScreen({Key? key, required this.camera}) : super(key: key);
 
   @override
   _CameraPreviewScreenState createState() => _CameraPreviewScreenState();
@@ -56,25 +95,12 @@ class CameraPreviewScreen extends StatefulWidget {
 class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-  CameraDescription? _selectedCamera;
 
   @override
   void initState() {
     super.initState();
-    _selectedCamera = widget.cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
-      orElse: () => widget.cameras.first,
-    );
-    _initializeCamera(_selectedCamera!);
-  }
-
-  void _initializeCamera(CameraDescription camera) {
-    _controller = CameraController(camera, ResolutionPreset.high);
-    _initializeControllerFuture = _controller.initialize().then((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    _controller = CameraController(widget.camera, ResolutionPreset.high);
+    _initializeControllerFuture = _controller.initialize();
   }
 
   @override
@@ -83,38 +109,10 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.dispose();
   }
 
-  void _onCameraSwitch(CameraDescription? newCamera) {
-    if (newCamera == null || newCamera == _selectedCamera) return;
-
-    setState(() {
-      _selectedCamera = newCamera;
-      _controller.dispose();
-      _initializeCamera(newCamera);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Camera Preview'),
-        actions: [
-          DropdownButton<CameraDescription>(
-            value: _selectedCamera,
-            onChanged: _onCameraSwitch,
-            items: widget.cameras.map((CameraDescription camera) {
-              return DropdownMenuItem<CameraDescription>(
-                value: camera,
-                child: Text(
-                  camera.lensDirection == CameraLensDirection.front
-                      ? 'Front Camera'
-                      : 'Rear Camera',
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Camera Preview')),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
