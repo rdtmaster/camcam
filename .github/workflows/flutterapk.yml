@@ -15,7 +15,7 @@ jobs:
         with:
           fetch-depth: 0
       - run: git fetch --force --tags
-      - name: Java
-      - uses: actions/setup-java@v5
+      - name: JavaSetUp
+        uses: actions/setup-java@v5
         distribution: 'oracle' # See 'Supported distributions' for available options
         java-version: '21'
