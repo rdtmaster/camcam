@@ -3,7 +3,6 @@ import 'package:camera/camera.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Obtain a list of the available cameras.
   final cameras = await availableCameras();
   runApp(MyApp(cameras: cameras));
 }
@@ -57,18 +56,25 @@ class CameraPreviewScreen extends StatefulWidget {
 class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  CameraDescription? _selectedCamera;
 
   @override
   void initState() {
     super.initState();
-    // Select the front camera (if available).
-    final frontCamera = widget.cameras.firstWhere(
+    _selectedCamera = widget.cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () => widget.cameras.first,
     );
+    _initializeCamera(_selectedCamera!);
+  }
 
-    _controller = CameraController(frontCamera, ResolutionPreset.high);
-    _initializeControllerFuture = _controller.initialize();
+  void _initializeCamera(CameraDescription camera) {
+    _controller = CameraController(camera, ResolutionPreset.high);
+    _initializeControllerFuture = _controller.initialize().then((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -77,18 +83,43 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.dispose();
   }
 
+  void _onCameraSwitch(CameraDescription? newCamera) {
+    if (newCamera == null || newCamera == _selectedCamera) return;
+
+    setState(() {
+      _selectedCamera = newCamera;
+      _controller.dispose();
+      _initializeCamera(newCamera);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Camera Preview'),
+        actions: [
+          DropdownButton<CameraDescription>(
+            value: _selectedCamera,
+            onChanged: _onCameraSwitch,
+            items: widget.cameras.map((CameraDescription camera) {
+              return DropdownMenuItem<CameraDescription>(
+                value: camera,
+                child: Text(
+                  camera.lensDirection == CameraLensDirection.front
+                      ? 'Front Camera'
+                      : 'Rear Camera',
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            // Use aspect ratio to make sure the preview scales properly
-            return AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: CameraPreview(_controller),
-            );
+            return CameraPreview(_controller);
           } else {
             return const Center(child: CircularProgressIndicator());
           }
