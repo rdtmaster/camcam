@@ -30,3 +30,4 @@ jobs:
           flutter create app1
           cd app1
           flutter pub get
+          flutter build apk --release
