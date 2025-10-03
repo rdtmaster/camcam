@@ -31,6 +31,7 @@ class CameraHome extends StatefulWidget {
 
 class _CameraHomeState extends State<CameraHome> {
   late CameraDescription selectedCamera;
+  String selectedFigure = 'circle'; // Default selection is circle
 
   @override
   void initState() {
@@ -46,6 +47,7 @@ class _CameraHomeState extends State<CameraHome> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // Camera selection dropdown
             DropdownButton<CameraDescription>(
               value: selectedCamera,
               onChanged: (CameraDescription? newCamera) {
@@ -64,6 +66,17 @@ class _CameraHomeState extends State<CameraHome> {
                 );
               }).toList(),
             ),
+            
+            // Figure Picker
+            FigurePicker(
+              selectedFigure: selectedFigure,
+              onFigureChanged: (String value) {
+                setState(() {
+                  selectedFigure = value;
+                });
+              },
+            ),
+            
             ElevatedButton(
               child: const Text('Open'),
               onPressed: () {
@@ -79,6 +92,65 @@ class _CameraHomeState extends State<CameraHome> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class FigurePicker extends StatelessWidget {
+  final String selectedFigure;
+  final Function(String) onFigureChanged;
+
+  const FigurePicker({
+    Key? key,
+    required this.selectedFigure,
+    required this.onFigureChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        // Radio buttons for Circle and Rectangle
+        Row(
+          children: <Widget>[
+            Radio<String>(
+              value: 'circle',
+              groupValue: selectedFigure,
+              onChanged: (String? value) {
+                if (value != null) onFigureChanged(value);
+              },
+            ),
+            const Text('Circle'),
+            Radio<String>(
+              value: 'rectangle',
+              groupValue: selectedFigure,
+              onChanged: (String? value) {
+                if (value != null) onFigureChanged(value);
+              },
+            ),
+            const Text('Rectangle'),
+          ],
+        ),
+        
+        // Text fields for Circle or Rectangle input
+        if (selectedFigure == 'circle') ...[
+          const Text('Center X:'),
+          const TextField(),
+          const Text('Center Y:'),
+          const TextField(),
+          const Text('Radius:'),
+          const TextField(),
+        ] else if (selectedFigure == 'rectangle') ...[
+          const Text('Upper Left X:'),
+          const TextField(),
+          const Text('Upper Left Y:'),
+          const TextField(),
+          const Text('Width:'),
+          const TextField(),
+          const Text('Height:'),
+          const TextField(),
+        ],
+      ],
     );
   }
 }
