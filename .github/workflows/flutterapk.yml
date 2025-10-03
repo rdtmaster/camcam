@@ -15,3 +15,4 @@ jobs:
         with:
           fetch-depth: 0
       - run: git fetch --force --tags
+      - run: flutter doctor
