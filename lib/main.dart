@@ -32,6 +32,13 @@ class CameraHome extends StatefulWidget {
 class _CameraHomeState extends State<CameraHome> {
   late CameraDescription selectedCamera;
   String selectedFigure = 'circle'; // Default selection is circle
+  TextEditingController centerXController = TextEditingController();
+  TextEditingController centerYController = TextEditingController();
+  TextEditingController radiusController = TextEditingController();
+  TextEditingController upperLeftXController = TextEditingController();
+  TextEditingController upperLeftYController = TextEditingController();
+  TextEditingController widthController = TextEditingController();
+  TextEditingController heightController = TextEditingController();
 
   @override
   void initState() {
@@ -77,13 +84,45 @@ class _CameraHomeState extends State<CameraHome> {
               },
             ),
             
+            // Text fields for Circle or Rectangle input
+            if (selectedFigure == 'circle') ...[
+              const Text('Center X:'),
+              TextField(controller: centerXController),
+              const Text('Center Y:'),
+              TextField(controller: centerYController),
+              const Text('Radius:'),
+              TextField(controller: radiusController),
+            ] else if (selectedFigure == 'rectangle') ...[
+              const Text('Upper Left X:'),
+              TextField(controller: upperLeftXController),
+              const Text('Upper Left Y:'),
+              TextField(controller: upperLeftYController),
+              const Text('Width:'),
+              TextField(controller: widthController),
+              const Text('Height:'),
+              TextField(controller: heightController),
+            ],
+            
             ElevatedButton(
               child: const Text('Open'),
               onPressed: () {
+                // Collect figure data
+                final figureData = {
+                  'figure': selectedFigure,
+                  'centerX': double.tryParse(centerXController.text) ?? 0.0,
+                  'centerY': double.tryParse(centerYController.text) ?? 0.0,
+                  'radius': double.tryParse(radiusController.text) ?? 50.0,
+                  'upperLeftX': double.tryParse(upperLeftXController.text) ?? 100.0,
+                  'upperLeftY': double.tryParse(upperLeftYController.text) ?? 100.0,
+                  'width': double.tryParse(widthController.text) ?? 100.0,
+                  'height': double.tryParse(heightController.text) ?? 100.0,
+                };
+                
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => CameraPreviewScreen(
                       camera: selectedCamera,
+                      figureData: figureData,
                     ),
                   ),
                 );
@@ -131,25 +170,6 @@ class FigurePicker extends StatelessWidget {
             const Text('Rectangle'),
           ],
         ),
-        
-        // Text fields for Circle or Rectangle input
-        if (selectedFigure == 'circle') ...[
-          const Text('Center X:'),
-          const TextField(),
-          const Text('Center Y:'),
-          const TextField(),
-          const Text('Radius:'),
-          const TextField(),
-        ] else if (selectedFigure == 'rectangle') ...[
-          const Text('Upper Left X:'),
-          const TextField(),
-          const Text('Upper Left Y:'),
-          const TextField(),
-          const Text('Width:'),
-          const TextField(),
-          const Text('Height:'),
-          const TextField(),
-        ],
       ],
     );
   }
@@ -157,8 +177,9 @@ class FigurePicker extends StatelessWidget {
 
 class CameraPreviewScreen extends StatefulWidget {
   final CameraDescription camera;
+  final Map<String, double> figureData;
 
-  const CameraPreviewScreen({Key? key, required this.camera}) : super(key: key);
+  const CameraPreviewScreen({Key? key, required this.camera, required this.figureData}) : super(key: key);
 
   @override
   _CameraPreviewScreenState createState() => _CameraPreviewScreenState();
@@ -189,12 +210,54 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_controller);
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                CameraPreview(_controller),
+                CustomPaint(
+                  painter: FigurePainter(figureData: widget.figureData),
+                ),
+              ],
+            );
           } else {
             return const Center(child: CircularProgressIndicator());
           }
         },
       ),
     );
+  }
+}
+
+class FigurePainter extends CustomPainter {
+  final Map<String, double> figureData;
+
+  FigurePainter({required this.figureData});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = Colors.blue
+      ..style = PaintingStyle.fill;
+
+    if (figureData['figure'] == 'circle') {
+      canvas.drawCircle(
+        Offset(figureData['centerX']!, figureData['centerY']!),
+        figureData['radius']!,
+        paint,
+      );
+    } else if (figureData['figure'] == 'rectangle') {
+      final Rect rect = Rect.fromLTWH(
+        figureData['upperLeftX']!,
+        figureData['upperLeftY']!,
+        figureData['width']!,
+        figureData['height']!,
+      );
+      canvas.drawRect(rect, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
   }
 }
