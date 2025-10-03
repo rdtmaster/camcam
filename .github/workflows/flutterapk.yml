@@ -6,7 +6,7 @@ on:
 
 permissions: write-all
 jobs:
-  flutterapk
+  myrelease:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,7 +16,7 @@ jobs:
       - name: Set Up Java
         uses: actions/setup-java@v5
         with:
-          distribution: 'oracle'
+          distribution: 'oracle' # See 'Supported distributions' for available options
           java-version: '21'
       - name: Set Up Flutter
         uses: subosito/flutter-action@v2
@@ -29,7 +29,11 @@ jobs:
           cd app1
           flutter pub get
           flutter build apk --release --verbose
+          cd ..
+      - name: zip me
+        run: |
+          zip -r app1.zip app1
       - uses: actions/upload-artifact@v4
         with:
           name: apk
-          path: ./build/app/output/apk/release/app-release.apk
+          path: ./app1.zip
