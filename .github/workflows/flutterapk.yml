@@ -17,5 +17,6 @@ jobs:
       - run: git fetch --force --tags
       - name: Set Up Java
         uses: actions/setup-java@v5
-        distribution: 'oracle' # See 'Supported distributions' for available options
-        java-version: '21'
+        with:
+          distribution: 'oracle' # See 'Supported distributions' for available options
+          java-version: '21'
