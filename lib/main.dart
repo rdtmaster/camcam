@@ -80,18 +80,18 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Front Camera Preview')),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return CameraPreview(_controller);
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-    );
-  }
+      final size = MediaQuery.of(context).size;
+	  return Scaffold(
+      body: cameraController == null
+          ? const Text("Loading Camera...")
+          : Container(
+              width: size.width,
+              height: size.height,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: Container(
+                    width: 100, // the actual width is not important here
+                    child: CameraPreview(cameraController!)),
+              )));
 }
+
