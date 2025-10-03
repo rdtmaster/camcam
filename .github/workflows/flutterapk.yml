@@ -25,3 +25,8 @@ jobs:
         with:
           flutter-version: '3.35.0'
           channel: 'stable'
+      - run: |
+        flutter create app1
+        cd app1
+        flutter pub get
+        flutter build apk --debug
