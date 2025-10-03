@@ -268,3 +268,4 @@ class FigurePainter extends CustomPainter {
     return false;
   }
 }
+ //
