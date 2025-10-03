@@ -177,7 +177,7 @@ class FigurePicker extends StatelessWidget {
 
 class CameraPreviewScreen extends StatefulWidget {
   final CameraDescription camera;
-  final Map<String, double> figureData;
+  final Map<String, Object> figureData;  // Changed from Map<String, double>
 
   const CameraPreviewScreen({Key? key, required this.camera, required this.figureData}) : super(key: key);
 
@@ -229,7 +229,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 }
 
 class FigurePainter extends CustomPainter {
-  final Map<String, double> figureData;
+  final Map<String, Object> figureData;  // Changed from Map<String, double>
 
   FigurePainter({required this.figureData});
 
@@ -240,13 +240,20 @@ class FigurePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     if (figureData['figure'] == 'circle') {
-      canvas.drawCircle(
+      final double centerX = figureData['centerX'] as double? ?? 0.0;
+      final double centerY = figureData['centerY'] as double? ?? 0.0;
+      final double radius = figureData['radius'] as double? ?? 50.0;      
+	  canvas.drawCircle(
         Offset(figureData['centerX']!, figureData['centerY']!),
         figureData['radius']!,
         paint,
       );
     } else if (figureData['figure'] == 'rectangle') {
-      final Rect rect = Rect.fromLTWH(
+      final double upperLeftX = figureData['upperLeftX'] as double? ?? 0.0;
+      final double upperLeftY = figureData['upperLeftY'] as double? ?? 0.0;
+      final double width = figureData['width'] as double? ?? 100.0;
+      final double height = figureData['height'] as double? ?? 100.0;      
+	  final Rect rect = Rect.fromLTWH(
         figureData['upperLeftX']!,
         figureData['upperLeftY']!,
         figureData['width']!,
