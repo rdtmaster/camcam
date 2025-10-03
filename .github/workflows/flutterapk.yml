@@ -31,8 +31,11 @@ jobs:
           cd app1
           flutter pub get
           flutter build apk --release --verbose
-          pwd
+          cd ..
+      - name: zip me
+        run: |
+          zip -r app1.zip app1
       - uses: actions/upload-artifact@v4
         with:
           name: apk
-          path: /home/runner/work/camcam/camcam/app1/build/app/outputs/flutter-apk'/app-release.apk
+          path: ./app1.zip
