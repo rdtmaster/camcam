@@ -9,10 +9,13 @@ permissions: write-all
 jobs:
      
   myrelease:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - run: git fetch --force --tags
-      - run: flutter doctor
+      - name: Java
+      - uses: actions/setup-java@v5
+        distribution: 'oracle' # See 'Supported distributions' for available options
+        java-version: '21'
