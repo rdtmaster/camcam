@@ -29,25 +29,6 @@ Future<void> saveVideoToGallery(String videoPath) async {
 }
 
 
-Future<void> saveVideoToGallery(String videoPath) async {
-  final galleryDir = Directory('/storage/emulated/0/DCIM/MyAppVideos');
-  if (!await galleryDir.exists()) {
-    await galleryDir.create(recursive: true);
-  }
-  final fileName = videoPath.split('/').last;
-  final newPath = '${galleryDir.path}/$fileName';
-  await File(videoPath).copy(newPath);
-
-  // Notify the media scanner (optional, to make the video appear in the gallery immediately)
-  await Process.run('am', [
-    'broadcast',
-    '-a',
-    'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
-    '-d',
-    'file://$newPath',
-  ]);
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
