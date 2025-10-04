@@ -268,13 +268,11 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			  isRecording = false;
 			  videoPath = file.path;
 			});
-
+			await Permission.manageExternalStorage.request();
 			// Save video to gallery using Gal
 			await saveVideoToGallery(videoPath);
 
-			ScaffoldMessenger.of(context).showSnackBar(
-			  SnackBar(content: Text('Video saved to gallery: $videoPath')),
-			);
+			
 		  } else {
 			final directory = await getTemporaryDirectory(); // Use temporary directory
 			final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
