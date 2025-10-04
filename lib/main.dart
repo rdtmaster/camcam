@@ -198,6 +198,28 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     _controller = CameraController(widget.camera, ResolutionPreset.high);
     _initializeControllerFuture = _controller.initialize();
   }
+  
+  Future<void> _requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.camera,
+      Permission.microphone,
+      Permission.storage, // For Android 10 and below
+      Permission.photos, // For Android 13+ (media access)
+    ].request();
+
+    if (await Permission.storage.isPermanentlyDenied ||
+        await Permission.photos.isPermanentlyDenied) {
+      // Open app settings if permission is permanently denied
+      await openAppSettings();
+    }
+
+    // For Android 11+, check MANAGE_EXTERNAL_STORAGE if needed
+    if (await Permission.manageExternalStorage.isRequired) {
+      await Permission.manageExternalStorage.request();
+    }
+  }
+
+
 
   @override
   void dispose() {
@@ -206,6 +228,22 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   }
 
   void _toggleRecording() async {
+  
+	try {
+      // Check if all required permissions are granted
+      bool hasPermissions = await Permission.camera.isGranted &&
+          await Permission.microphone.isGranted &&
+          (await Permission.storage.isGranted ||
+              await Permission.photos.isGranted);
+
+      if (!hasPermissions) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Please grant camera, microphone, and storage permissions')),
+        );
+        await _requestPermissions();
+        return;
+      }
     if (isRecording) {
       await _controller.stopVideoRecording().then((file) async {
         setState(() {
@@ -213,10 +251,16 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
           videoPath = file.path;
         });
 
-        await Gal.requestAccess();
-		
+
+		bool hasAccess = await Gal.hasAccess();
+		if (!hasAccess) {
+          await Gal.requestAccess();
+        }
 		// Save video to gallery
         await Gal.putVideo(videoPath);
+		ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Video saved to gallery: $videoPath')),
+        );
       });
     } else {
       final directory = await getApplicationDocumentsDirectory();
