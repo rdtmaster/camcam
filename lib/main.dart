@@ -251,13 +251,13 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.dispose();
   }
 
-	void _toggleRecording() async {
+	future<void> _toggleRecording() async {
 		try {
 		  // Check if all required permissions are granted
 		  bool hasPermissions = await Permission.camera.isGranted &&
-			  await Permission.microphone.isGranted &&
-			  (await Permission.storage.isGranted ||
-				  await Permission.photos.isGranted);
+        await Permission.microphone.isGranted &&
+        (await Permission.storage.isGranted ||
+            await Permission.photos.isGranted);
 
 		  if (!hasPermissions) {
 			ScaffoldMessenger.of(context).showSnackBar(
@@ -274,8 +274,13 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			  isRecording = false;
 			  videoPath = file.path;
 			});
-			await Permission.manageExternalStorage.request();
-			await saveVideoToGallery(videoPath);
+			if (Platform.isAndroid) {
+        // Request Manage External Storage permission for Android 11 and above
+        await Permission.manageExternalStorage.request();
+      }
+
+      await saveVideoToGallery(videoPath);
+			
 
 			
 		  } else {
