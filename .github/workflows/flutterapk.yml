@@ -30,7 +30,7 @@ jobs:
           flutter pub cache repair
           flutter clean
           flutter pub get
-          flutter build apk --release --verbose
+          flutter build apk --release  --scan
       - uses: actions/upload-artifact@v4
         with:
           name: apk
