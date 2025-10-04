@@ -251,7 +251,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.dispose();
   }
 
-	future<void> _toggleRecording() async {
+	Future<void> _toggleRecording() async {
 		try {
 		  // Check if all required permissions are granted
 		  bool hasPermissions = await Permission.camera.isGranted &&
