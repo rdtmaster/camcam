@@ -1,8 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+
+import 'package:permission_handler/permission_handler.dart';
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
+
+Future<void> saveVideoToGallery(String videoPath) async {
+  final fileName = videoPath.split('/').last;
+  final videoFile = File(videoPath);
+
+  if (await Permission.manageExternalStorage.isGranted) {
+    // Use MediaStore for Android 10 and above
+    try {
+      final mediaStoreUri = Uri.parse('content://media/external/video/media');
+      final intent = AndroidIntent(
+        action: 'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
+        data: Uri.parse('file://$videoPath'),
+      );
+      await intent.launch();
+    } catch (e) {
+      print('Error while scanning media: $e');
+    }
+  } else {
+    print('Permission denied to manage external storage');
+  }
+}
+
 
 Future<void> saveVideoToGallery(String videoPath) async {
   final galleryDir = Directory('/storage/emulated/0/DCIM/MyAppVideos');
