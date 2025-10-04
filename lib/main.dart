@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -186,6 +188,8 @@ class CameraPreviewScreen extends StatefulWidget {
 class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  bool isRecording = false;
+  late String videoPath;
 
   @override
   void initState() {
@@ -198,6 +202,29 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _toggleRecording() async {
+    if (isRecording) {
+      await _controller.stopVideoRecording().then((file) async {
+        setState(() {
+          isRecording = false;
+          videoPath = file.path;
+        });
+
+        // Save video to gallery
+        await GallerySaver.saveVideo(file.path);
+      });
+    } else {
+      final directory = await getApplicationDocumentsDirectory();
+      final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+      await _controller.startVideoRecording().then((_) {
+        setState(() {
+          isRecording = true;
+          videoPath = videoFile;
+        });
+      });
+    }
   }
 
   @override
@@ -213,6 +240,18 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
                 CameraPreview(_controller),
                 CustomPaint(
                   painter: FigurePainter(figureData: widget.figureData),
+                ),
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: IconButton(
+                    icon: Icon(
+                      isRecording ? Icons.stop : Icons.videocam,
+                      color: Colors.red,
+                      size: 50,
+                    ),
+                    onPressed: _toggleRecording,
+                  ),
                 ),
               ],
             );
@@ -248,14 +287,8 @@ class FigurePainter extends CustomPainter {
     } else if (figureType == 'rectangle') {
       final double upperLeftX = figureData['upperLeftX'] as double? ?? 0.0;
       final double upperLeftY = figureData['upperLeftY'] as double? ?? 0.0;
-      final double width = figureData['width'] as double? ?? 100.0;
-      final double height = figureData['height'] as double? ?? 100.0;
-
-      final rect = Rect.fromLTWH(upperLeftX, upperLeftY, width, height);
-      canvas.drawRect(rect, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+     
+	}
+	  @override
+	  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
