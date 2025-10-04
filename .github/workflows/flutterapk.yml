@@ -27,7 +27,6 @@ jobs:
         run: |
           flutter channel stable
           flutter upgrade --force
-          flutter pub global activate devtools
           flutter pub cache repair
           flutter clean
           flutter pub get
