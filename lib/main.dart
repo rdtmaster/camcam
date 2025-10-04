@@ -1,25 +1,26 @@
+import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:android_intent_plus/android_intent.dart';
-import 'package:android_intent_plus/flag.dart';
+import 'dart:io';
 
 Future<void> saveVideoToGallery(String videoPath) async {
-  final fileName = videoPath.split('/').last;
-  final videoFile = File(videoPath);
-    if (await Permission.manageExternalStorage.isGranted) {
-    // Use MediaStore for Android 10 and above
-    try {
-      final mediaStoreUri = Uri.parse('content://media/external/video/media');
-      final intent = AndroidIntent(
-        action: 'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
-        data: Uri.parse('file://$videoPath'),
-      );
-      await intent.launch();
-    } catch (e) {
-      print('Error while scanning media: $e');
-    }
-  } else {
-    print('Permission denied to manage external storage');
+  final galleryDir = Directory('/storage/emulated/0/DCIM/MyAppVideos');
+  if (!await galleryDir.exists()) {
+    await galleryDir.create(recursive: true);
   }
+  final fileName = videoPath.split('/').last;
+  final newPath = '${galleryDir.path}/$fileName';
+  await File(videoPath).copy(newPath);
+
+  // Notify the media scanner (optional, to make the video appear in the gallery immediately)
+  await Process.run('am', [
+    'broadcast',
+    '-a',
+    'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
+    '-d',
+    'file://$newPath',
+  ]);
 }
 
 void main() async {
@@ -244,52 +245,48 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.dispose();
   }
 
-	Future<void> _toggleRecording() async {
-	  try {
-		// Check if all required permissions are granted
-		bool hasPermissions = await Permission.camera.isGranted &&
-			await Permission.microphone.isGranted &&
-			(await Permission.storage.isGranted ||
-				await Permission.photos.isGranted);
+	void _toggleRecording() async {
+		try {
+		  // Check if all required permissions are granted
+		  bool hasPermissions = await Permission.camera.isGranted &&
+			  await Permission.microphone.isGranted &&
+			  (await Permission.storage.isGranted ||
+				  await Permission.photos.isGranted);
 
-		if (!hasPermissions) {
-		  ScaffoldMessenger.of(context).showSnackBar(
-			const SnackBar(
-				content: Text('Please grant camera, microphone, and storage permissions')),
-		  );
-		  await _requestPermissions();
-		  return;
-		}
-
-		if (isRecording) {
-		  final file = await _controller.stopVideoRecording();
-		  setState(() {
-			isRecording = false;
-			videoPath = file.path;
-		  });
-
-		  if (Platform.isAndroid) {
-			// Request Manage External Storage permission for Android 11 and above
-			await Permission.manageExternalStorage.request();
+		  if (!hasPermissions) {
+			ScaffoldMessenger.of(context).showSnackBar(
+			  const SnackBar(
+				  content: Text('Please grant camera, microphone, and storage permissions')),
+			);
+			await _requestPermissions();
+			return;
 		  }
 
-		  await saveVideoToGallery(videoPath);
-		} else {
-		  final directory = await getTemporaryDirectory();
-		  final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-		  await _controller.startVideoRecording();
-		  setState(() {
-			isRecording = true;
-			videoPath = videoFile;
-		  });
-		}
-	  } catch (e) {
-		ScaffoldMessenger.of(context).showSnackBar(
-		  SnackBar(content: Text('Error during recording: $e')),
-		);
-	  }
-	}
+		  if (isRecording) {
+			final file = await _controller.stopVideoRecording();
+			setState(() {
+			  isRecording = false;
+			  videoPath = file.path;
+			});
+			await Permission.manageExternalStorage.request();
+			await saveVideoToGallery(videoPath);
 
+			
+		  } else {
+			final directory = await getTemporaryDirectory(); // Use temporary directory
+			final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+			await _controller.startVideoRecording();
+			setState(() {
+			  isRecording = true;
+			  videoPath = videoFile;
+			});
+		  }
+		} catch (e) {
+		  ScaffoldMessenger.of(context).showSnackBar(
+			SnackBar(content: Text('Error during recording: $e')),
+		  );
+		}
+	}  
 
 
   @override
