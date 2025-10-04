@@ -67,10 +67,7 @@ class _CameraHomeState extends State<CameraHome> {
 	  if (await Permission.camera.isGranted &&
 		  await Permission.microphone.isGranted &&
 		  await Permission.storage.isGranted) {
-		setState(() {
-		  // Initialize the camera controller only if permissions are granted
-		  _initializeCamera();
-		});
+		
 	  } else {
 		print('Required permissions not granted. Closing app.');
 		// Handle permission denial, e.g., close the app or show an error dialog
