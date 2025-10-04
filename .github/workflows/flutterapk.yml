@@ -25,6 +25,11 @@ jobs:
           channel: 'stable'
       - name: Create and build
         run: |
+          flutter channel stable
+          flutter upgrade --force
+          flutter pub global activate devtools
+          flutter pub cache repair
+          flutter clean
           flutter pub get
           flutter build apk --release --verbose
       - uses: actions/upload-artifact@v4
