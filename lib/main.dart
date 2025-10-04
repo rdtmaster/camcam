@@ -17,7 +17,7 @@ Future<void> saveVideoToGallery(String videoPath) async {
       final mediaStoreUri = Uri.parse('content://media/external/video/media');
       final intent = AndroidIntent(
         action: 'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
-        data: Uri.parse('file://$videoPath'),
+        data: 'file://$videoPath',
       );
       await intent.launch();
     } catch (e) {
