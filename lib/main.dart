@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gal/gal.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -197,6 +198,26 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.initState();
     _controller = CameraController(widget.camera, ResolutionPreset.high);
     _initializeControllerFuture = _controller.initialize();
+	_requestPermissions();
+  }
+  Future<void> _requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.camera,
+      Permission.microphone,
+      Permission.storage, // For Android 10 and below
+      Permission.photos, // For Android 13+ (media access)
+    ].request();
+
+    if (await Permission.storage.isPermanentlyDenied ||
+        await Permission.photos.isPermanentlyDenied) {
+      // Open app settings if permission is permanently denied
+      await openAppSettings();
+    }
+
+    // For Android 11+, check MANAGE_EXTERNAL_STORAGE if needed
+    if (await Permission.manageExternalStorage.isRequired) {
+      await Permission.manageExternalStorage.request();
+    }
   }
 
   @override
