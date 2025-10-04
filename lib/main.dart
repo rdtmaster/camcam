@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:gal/gal.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 
 Future<void> saveVideoToGallery(String videoPath) async {
   final galleryDir = Directory('/storage/emulated/0/DCIM/MyAppVideos');
@@ -270,10 +270,6 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			});
 
 			// Save video to gallery using Gal
-			bool hasAccess = await Gal.hasAccess();
-			if (!hasAccess) {
-			  await Gal.requestAccess();
-			}
 			await saveVideoToGallery(videoPath);
 
 			ScaffoldMessenger.of(context).showSnackBar(
