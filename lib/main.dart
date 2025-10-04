@@ -273,7 +273,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			await saveVideoToGallery(videoPath);
 			ScaffoldMessenger.of(context).showSnackBar(
 				const SnackBar(
-					content: const Text(videoPath)),
+					content: const videoPath),
 			);
 
 			
