@@ -54,12 +54,35 @@ class _CameraHomeState extends State<CameraHome> {
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
 
+  
+  
   @override
   void initState() {
     super.initState();
-	await requestPermissions();
-    selectedCamera = widget.cameras.first;
+    _initializePermissions();
+	selectedCamera = widget.cameras.first;
   }
+  void _initializePermissions() async {
+	  await requestPermissions();
+	  if (await Permission.camera.isGranted &&
+		  await Permission.microphone.isGranted &&
+		  await Permission.storage.isGranted) {
+		setState(() {
+		  // Initialize the camera controller only if permissions are granted
+		  _initializeCamera();
+		});
+	  } else {
+		print('Required permissions not granted. Closing app.');
+		// Handle permission denial, e.g., close the app or show an error dialog
+	  }
+	}
+
+	void _initializeCamera() {
+	  _controller = CameraController(widget.camera, ResolutionPreset.high);
+	  _initializeControllerFuture = _controller.initialize();
+	}
+
+
 
   @override
   Widget build(BuildContext context) {
