@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gal/gal.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -341,6 +342,7 @@ class FigurePainter extends CustomPainter {
       Rect rect = Rect.fromLTWH(upperLeftX, upperLeftY, width, height);
       canvas.drawRect(rect, paint);
   }
+}
 }
     @override
     bool shouldRepaint(CustomPainter oldDelegate) => false;
