@@ -285,10 +285,15 @@ class FigurePainter extends CustomPainter {
 
       canvas.drawCircle(Offset(centerX, centerY), radius, paint);
     } else if (figureType == 'rectangle') {
-      final double upperLeftX = figureData['upperLeftX'] as double? ?? 0.0;
-      final double upperLeftY = figureData['upperLeftY'] as double? ?? 0.0;
-     
+		  final double upperLeftX = figureData['upperLeftX'] as double? ?? 0.0;
+		  final double upperLeftY = figureData['upperLeftY'] as double? ?? 0.0;
+		  final double width = figureData['width'] as double? ?? 100.0;
+		  final double height = figureData['height'] as double? ?? 100.0;
+
+		  Rect rect = Rect.fromLTWH(upperLeftX, upperLeftY, width, height);
+		  canvas.drawRect(rect, paint);
 	}
+}
 	  @override
 	  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
