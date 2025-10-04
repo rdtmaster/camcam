@@ -215,9 +215,9 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     }
 
     // For Android 11+, check MANAGE_EXTERNAL_STORAGE if needed
-    if (await Permission.manageExternalStorage.isRequired) {
-      await Permission.manageExternalStorage.request();
-    }
+    
+      //await Permission.manageExternalStorage.request();
+    
   }
 
   @override
