@@ -2,18 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gal/gal.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-
-
-Future<void> requestPermissions() async {
-	await [
-	  Permission.camera,
-	  Permission.microphone,
-	  Permission.storage,
-	].request();
-}
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,32 +42,11 @@ class _CameraHomeState extends State<CameraHome> {
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
 
-  
-  
   @override
   void initState() {
     super.initState();
-    _initializePermissions();
-	selectedCamera = widget.cameras.first;
+    selectedCamera = widget.cameras.first;
   }
-  void _initializePermissions() async {
-	  await requestPermissions();
-	  if (await Permission.camera.isGranted &&
-		  await Permission.microphone.isGranted &&
-		  await Permission.storage.isGranted) {
-		
-	  } else {
-		print('Required permissions not granted. Closing app.');
-		// Handle permission denial, e.g., close the app or show an error dialog
-	  }
-	}
-
-	void _initializeCamera() {
-	  _controller = CameraController(widget.camera, ResolutionPreset.high);
-	  _initializeControllerFuture = _controller.initialize();
-	}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +99,7 @@ class _CameraHomeState extends State<CameraHome> {
                 TextField(controller: upperLeftYController),
                 const Text('Width:'),
                 TextField(controller: widthController),
+
                 const Text('Height:'),
                 TextField(controller: heightController),
               ],
@@ -260,6 +228,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -318,15 +287,15 @@ class FigurePainter extends CustomPainter {
 
       canvas.drawCircle(Offset(centerX, centerY), radius, paint);
     } else if (figureType == 'rectangle') {
-		  final double upperLeftX = figureData['upperLeftX'] as double? ?? 0.0;
-		  final double upperLeftY = figureData['upperLeftY'] as double? ?? 0.0;
-		  final double width = figureData['width'] as double? ?? 100.0;
-		  final double height = figureData['height'] as double? ?? 100.0;
+      final double upperLeftX = figureData['upperLeftX'] as double? ?? 0.0;
+      final double upperLeftY = figureData['upperLeftY'] as double? ?? 0.0;
+      final double width = figureData['width'] as double? ?? 100.0;
+      final double height = figureData['height'] as double? ?? 100.0;
 
-		  Rect rect = Rect.fromLTWH(upperLeftX, upperLeftY, width, height);
-		  canvas.drawRect(rect, paint);
-	}
+      Rect rect = Rect.fromLTWH(upperLeftX, upperLeftY, width, height);
+      canvas.drawRect(rect, paint);
+  }
 }
-	  @override
-	  bool shouldRepaint(CustomPainter oldDelegate) => false;
+    @override
+    bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
