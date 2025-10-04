@@ -271,10 +271,6 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			await Permission.manageExternalStorage.request();
 			// Save video to gallery using Gal
 			await saveVideoToGallery(videoPath);
-			ScaffoldMessenger.of(context).showSnackBar(
-				const SnackBar(
-					content: (videoPath),
-			);
 
 			
 		  } else {
