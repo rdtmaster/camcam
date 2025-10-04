@@ -226,30 +226,55 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.dispose();
   }
 
-  void _toggleRecording() async {
-    if (isRecording) {
-      await _controller.stopVideoRecording().then((file) async {
-        setState(() {
-          isRecording = false;
-          videoPath = file.path;
-        });
+	void _toggleRecording() async {
+		try {
+		  // Check if all required permissions are granted
+		  bool hasPermissions = await Permission.camera.isGranted &&
+			  await Permission.microphone.isGranted &&
+			  (await Permission.storage.isGranted ||
+				  await Permission.photos.isGranted);
 
-        await Gal.requestAccess();
-		
-		// Save video to gallery
-        await Gal.putVideo(videoPath);
-      });
-    } else {
-      final directory = await getApplicationDocumentsDirectory();
-      final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-      await _controller.startVideoRecording().then((_) {
-        setState(() {
-          isRecording = true;
-          videoPath = videoFile;
-        });
-      });
-    }
-  }
+		  if (!hasPermissions) {
+			ScaffoldMessenger.of(context).showSnackBar(
+			  const SnackBar(
+				  content: Text('Please grant camera, microphone, and storage permissions')),
+			);
+			await _requestPermissions();
+			return;
+		  }
+
+		  if (isRecording) {
+			final file = await _controller.stopVideoRecording();
+			setState(() {
+			  isRecording = false;
+			  videoPath = file.path;
+			});
+
+			// Save video to gallery using Gal
+			bool hasAccess = await Gal.hasAccess();
+			if (!hasAccess) {
+			  await Gal.requestAccess();
+			}
+			await Gal.putVideo(videoPath);
+
+			ScaffoldMessenger.of(context).showSnackBar(
+			  SnackBar(content: Text('Video saved to gallery: $videoPath')),
+			);
+		  } else {
+			final directory = await getTemporaryDirectory(); // Use temporary directory
+			final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+			await _controller.startVideoRecording();
+			setState(() {
+			  isRecording = true;
+			  videoPath = videoFile;
+			});
+		  }
+		} catch (e) {
+		  ScaffoldMessenger.of(context).showSnackBar(
+			SnackBar(content: Text('Error during recording: $e')),
+		  );
+		}
+	}  
 
 
   @override
