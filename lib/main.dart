@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:gal/gal.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -213,7 +213,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
         });
 
         // Save video to gallery
-        wait Gal.putImage(a(file.path);
+        await Gal.putImage(a(file.path);
       });
     } else {
       final directory = await getApplicationDocumentsDirectory();
