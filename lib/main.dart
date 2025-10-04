@@ -213,7 +213,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
         });
 
         // Save video to gallery
-        await GallerySaver.saveVideo(file.path);
+        wait Gal.putImage(a(file.path);
       });
     } else {
       final directory = await getApplicationDocumentsDirectory();
