@@ -49,7 +49,7 @@ class _CameraHomeState extends State<CameraHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Camera Picker Example')),
+      appBar: AppBar(title: const Text('Pick the camera, choose figure type and enter coordinates')),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -203,7 +203,6 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Camera Preview')),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
@@ -234,8 +233,9 @@ class FigurePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = Paint()
-      ..color = Colors.blue.withOpacity(0.5)
-      ..style = PaintingStyle.fill;
+      ..color = Colors.blue // Border color
+      ..style = PaintingStyle.stroke  // Ensure only the border is drawn
+      ..strokeWidth = 4.0; // Border width, can be adjusted
 
     final String? figureType = figureData['figure'] as String?;
 
