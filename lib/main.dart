@@ -21,14 +21,10 @@ Future<void> saveVideoToGallery(String videoPath) async {
 	  final newPath = '${directory.path}/$fileName';
 	  final videoFile = File(videoPath);
       await videoFile.copy(newPath);
-	  ScaffoldMessenger.of(context).showSnackBar(
-			SnackBar(content: Text('Video saved to: $newPath')),
-	  );
+	  
       
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-			SnackBar(content: Text('Error during saving: $e')),
-	  );
+      print('err $e');
     }
   } else {
     print('Permission denied to manage external storage');
