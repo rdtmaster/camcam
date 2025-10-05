@@ -13,14 +13,22 @@ Future<void> saveVideoToGallery(String videoPath) async {
 
   if (await Permission.manageExternalStorage.isGranted) {
     try {
-      final mediaStoreUri = Uri.parse('content://media/external/video/media');
-      final intent = AndroidIntent(
-        action: 'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
-        data: 'file://$videoPath',
-      );
-      await intent.launch();
+      final directory = Directory('/storage/emulated/0/Movies');
+	  if (!(await directory.exists())) {
+		await directory.create(recursive: true);
+      }
+	  
+	  final newPath = '${directory.path}/$fileName';
+	  final videoFile = File(videoPath);
+      await videoFile.copy(newPath);
+	  ScaffoldMessenger.of(context).showSnackBar(
+			SnackBar(content: Text('Video saved to: $newPath')),
+	  );
+      
     } catch (e) {
-      print('Error while scanning media: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+			SnackBar(content: Text('Error during saving: $e')),
+	  );
     }
   } else {
     print('Permission denied to manage external storage');
