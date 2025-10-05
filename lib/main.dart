@@ -12,7 +12,6 @@ Future<void> saveVideoToGallery(String videoPath) async {
   final videoFile = File(videoPath);
 
   if (await Permission.manageExternalStorage.isGranted) {
-    // Use MediaStore for Android 10 and above
     try {
       final mediaStoreUri = Uri.parse('content://media/external/video/media');
       final intent = AndroidIntent(
@@ -229,20 +228,16 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.camera,
       Permission.microphone,
-      Permission.storage, // For Android 10 and below
-      Permission.photos, // For Android 13+ (media access)
+      Permission.photos, // Request media access on Android 13+
+      Permission.videos, // For video media access on Android 13+
     ].request();
 
-    if (await Permission.storage.isPermanentlyDenied ||
-        await Permission.photos.isPermanentlyDenied) {
-      // Open app settings if permission is permanently denied
-      await openAppSettings();
+    if (await Permission.camera.isPermanentlyDenied ||
+      await Permission.microphone.isPermanentlyDenied ||
+      await Permission.photos.isPermanentlyDenied ||
+      await Permission.videos.isPermanentlyDenied) {
+        await openAppSettings();
     }
-
-    // For Android 11+, check MANAGE_EXTERNAL_STORAGE if needed
-    
-      //await Permission.manageExternalStorage.request();
-    
   }
 
   @override
@@ -251,53 +246,51 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     super.dispose();
   }
 
-	Future<void> _toggleRecording() async {
-		try {
+  Future<void> _toggleRecording() async {
+    try {
 		  // Check if all required permissions are granted
-		  bool hasPermissions = await Permission.camera.isGranted &&
+    bool hasPermissions = await Permission.camera.isGranted &&
         await Permission.microphone.isGranted &&
         (await Permission.storage.isGranted ||
-            await Permission.photos.isGranted);
+        await Permission.photos.isGranted);
 
-		  if (!hasPermissions) {
-			ScaffoldMessenger.of(context).showSnackBar(
+    if (!hasPermissions) {
+        ScaffoldMessenger.of(context).showSnackBar(
 			  const SnackBar(
 				  content: Text('Please grant camera, microphone, and storage permissions')),
-			);
-			await _requestPermissions();
-			return;
-		  }
+			  );
+        await _requestPermissions();
+		return;
+        }
 
-		  if (isRecording) {
-			final file = await _controller.stopVideoRecording();
+    if (isRecording) {
+            final file = await _controller.stopVideoRecording();
 			setState(() {
 			  isRecording = false;
 			  videoPath = file.path;
 			});
-			if (Platform.isAndroid) {
-        // Request Manage External Storage permission for Android 11 and above
-        await Permission.manageExternalStorage.request();
-      }
+        if (Platform.isAndroid) {
+                // Request Manage External Storage permission for Android 11 and above
+                await Permission.manageExternalStorage.request();
+        }
 
-      await saveVideoToGallery(videoPath);
-			
+        await saveVideoToGallery(videoPath);
 
-			
-		  } else {
-			final directory = await getTemporaryDirectory(); // Use temporary directory
-			final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-			await _controller.startVideoRecording();
-			setState(() {
-			  isRecording = true;
-			  videoPath = videoFile;
-			});
-		  }
+	  } else {
+		final directory = await getTemporaryDirectory(); // Use temporary directory
+		final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+		await _controller.startVideoRecording();
+		setState(() {
+		  isRecording = true;
+		  videoPath = videoFile;
+		});
+	  }
 		} catch (e) {
 		  ScaffoldMessenger.of(context).showSnackBar(
 			SnackBar(content: Text('Error during recording: $e')),
 		  );
 		}
-	}  
+	}
 
 
   @override
