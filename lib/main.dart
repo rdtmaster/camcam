@@ -254,14 +254,6 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
         (await Permission.storage.isGranted ||
         await Permission.photos.isGranted);
 
-    if (!hasPermissions) {
-        ScaffoldMessenger.of(context).showSnackBar(
-			  const SnackBar(
-				  content: Text('Please grant camera, microphone, and storage permissions')),
-			  );
-        await _requestPermissions();
-		return;
-        }
 
     if (isRecording) {
             final file = await _controller.stopVideoRecording();
