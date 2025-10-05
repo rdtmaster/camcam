@@ -269,7 +269,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
         await saveVideoToGallery(videoPath);
 
 	  } else {
-		final directory = await getTemporaryDirectory(); // Use temporary directory
+		final directory = await getApplicationDocumentsDirectory();
 		final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
 		await _controller.startVideoRecording();
 		setState(() {
