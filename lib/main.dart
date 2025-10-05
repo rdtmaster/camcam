@@ -15,10 +15,10 @@ Future<void> saveVideoToGallery(String videoPath) async {
     // Use MediaStore for Android 10 and above
     try {
       final mediaStoreUri = Uri.parse('content://media/external/video/media');
-      final intent = AndroidIntent(
-        action: 'android.intent.action.MEDIA_SCANNER_SCAN_FILE',
-        data: 'file://$videoPath',
-      );
+      final intent =
+          AndroidIntent(action
+                        : 'android.intent.action.MEDIA_SCANNER_SCAN_FILE', data
+                        : 'file://$videoPath', );
       await intent.launch();
     } catch (e) {
       print('Error while scanning media: $e');
@@ -28,11 +28,10 @@ Future<void> saveVideoToGallery(String videoPath) async {
   }
 }
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final cameras = await availableCameras();
-  runApp(MyApp(cameras: cameras));
+  runApp(MyApp(cameras : cameras));
 }
 
 class MyApp extends StatelessWidget {
@@ -40,11 +39,8 @@ class MyApp extends StatelessWidget {
 
   const MyApp({Key? key, required this.cameras}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CameraHome(cameras: cameras),
-    );
+  @override Widget build(BuildContext context) {
+    return MaterialApp(home : CameraHome(cameras : cameras), );
   }
 }
 
@@ -53,13 +49,12 @@ class CameraHome extends StatefulWidget {
 
   const CameraHome({Key? key, required this.cameras}) : super(key: key);
 
-  @override
-  _CameraHomeState createState() => _CameraHomeState();
+  @override _CameraHomeState createState() = > _CameraHomeState();
 }
 
 class _CameraHomeState extends State<CameraHome> {
   late CameraDescription selectedCamera;
-  String selectedFigure = 'circle'; // Default selection is circle
+  String selectedFigure = 'circle';  // Default selection is circle
   final TextEditingController centerXController = TextEditingController();
   final TextEditingController centerYController = TextEditingController();
   final TextEditingController radiusController = TextEditingController();
@@ -68,14 +63,12 @@ class _CameraHomeState extends State<CameraHome> {
   final TextEditingController widthController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
 
-  @override
-  void initState() {
+  @override void initState() {
     super.initState();
     selectedCamera = widget.cameras.first;
   }
 
-  @override
-  Widget build(BuildContext context) {
+  @override Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Pick the camera, choose figure type and enter coordinates')),
       body: SingleChildScrollView(
@@ -86,29 +79,23 @@ class _CameraHomeState extends State<CameraHome> {
               DropdownButton<CameraDescription>(
                 value: selectedCamera,
                 onChanged: (CameraDescription? newCamera) {
-                  if (newCamera != null) {
-                    setState(() {
-                      selectedCamera = newCamera;
-                    });
-                  }
+      if (newCamera != null) {
+        setState(() { selectedCamera = newCamera; });
+      }
                 },
                 items: widget.cameras.map((camera) {
-                  return DropdownMenuItem<CameraDescription>(
-                    value: camera,
-                    child: Text(
-                      camera.lensDirection == CameraLensDirection.front
-                          ? 'Front Camera'
-                          : 'Rear Camera',
-                    ),
-                  );
+      return DropdownMenuItem<CameraDescription>(
+          value
+          : camera, child
+          : Text(camera.lensDirection == CameraLensDirection.front
+                     ? 'Front Camera'
+                     : 'Rear Camera', ), );
                 }).toList(),
               ),
               FigurePicker(
                 selectedFigure: selectedFigure,
                 onFigureChanged: (String value) {
-                  setState(() {
-                    selectedFigure = value;
-                  });
+      setState(() { selectedFigure = value; });
                 },
               ),
               if (selectedFigure == 'circle') ...[
@@ -133,25 +120,34 @@ class _CameraHomeState extends State<CameraHome> {
               ElevatedButton(
                 child: const Text('Open'),
                 onPressed: () {
-                  final figureData = {
-                    'figure': selectedFigure,
-                    'centerX': double.tryParse(centerXController.text) ?? 0.0,
-                    'centerY': double.tryParse(centerYController.text) ?? 0.0,
-                    'radius': double.tryParse(radiusController.text) ?? 50.0,
-                    'upperLeftX': double.tryParse(upperLeftXController.text) ?? 100.0,
-                    'upperLeftY': double.tryParse(upperLeftYController.text) ?? 100.0,
-                    'width': double.tryParse(widthController.text) ?? 100.0,
-                    'height': double.tryParse(heightController.text) ?? 100.0,
-                  };
+      final figureData = {'figure' : selectedFigure,
+                          'centerX' : double.tryParse(centerXController.text)
+                          ? ? 0.0,
+                          'centerY'
+                            : double.tryParse(centerYController.text)
+                          ? ? 0.0,
+                          'radius'
+                            : double.tryParse(radiusController.text)
+                          ? ? 50.0,
+                          'upperLeftX'
+                            : double.tryParse(upperLeftXController.text)
+                          ? ? 100.0,
+                          'upperLeftY'
+                            : double.tryParse(upperLeftYController.text)
+                          ? ? 100.0,
+                          'width'
+                            : double.tryParse(widthController.text)
+                          ? ? 100.0,
+                          'height'
+                            : double.tryParse(heightController.text)
+                          ? ? 100.0, };
 
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => CameraPreviewScreen(
-                        camera: selectedCamera,
-                        figureData: figureData,
-                      ),
-                    ),
-                  );
+      Navigator.of(context).push(
+          MaterialPageRoute(
+              builder
+              : (context) = > CameraPreviewScreen(camera
+                                                  : selectedCamera, figureData
+                                                  : figureData, ), ), );
                 },
               ),
             ],
@@ -172,8 +168,7 @@ class FigurePicker extends StatelessWidget {
     required this.onFigureChanged,
   }) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
+  @override Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -181,7 +176,7 @@ class FigurePicker extends StatelessWidget {
           value: 'circle',
           groupValue: selectedFigure,
           onChanged: (String? value) {
-            if (value != null) onFigureChanged(value);
+      if (value != null) onFigureChanged(value);
           },
         ),
         const Text('Circle'),
@@ -189,7 +184,7 @@ class FigurePicker extends StatelessWidget {
           value: 'rectangle',
           groupValue: selectedFigure,
           onChanged: (String? value) {
-            if (value != null) onFigureChanged(value);
+      if (value != null) onFigureChanged(value);
           },
         ),
         const Text('Rectangle'),
@@ -208,8 +203,8 @@ class CameraPreviewScreen extends StatefulWidget {
     required this.figureData,
   }) : super(key: key);
 
-  @override
-  _CameraPreviewScreenState createState() => _CameraPreviewScreenState();
+  @override _CameraPreviewScreenState createState() =
+      > _CameraPreviewScreenState();
 }
 
 class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
@@ -218,20 +213,19 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   bool isRecording = false;
   late String videoPath;
 
-  @override
-  void initState() {
+  @override void initState() {
     super.initState();
     _controller = CameraController(widget.camera, ResolutionPreset.high);
     _initializeControllerFuture = _controller.initialize();
-	_requestPermissions();
+    _requestPermissions();
   }
   Future<void> _requestPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.camera,
-      Permission.microphone,
-      Permission.storage, // For Android 10 and below
-      Permission.photos, // For Android 13+ (media access)
-    ].request();
+    Map<Permission, PermissionStatus> statuses =
+        await[Permission.camera, Permission.microphone,
+              Permission.storage,  // For Android 10 and below
+              Permission.photos,   // For Android 13+ (media access)
+    ]
+            .request();
 
     if (await Permission.storage.isPermanentlyDenied ||
         await Permission.photos.isPermanentlyDenied) {
@@ -240,100 +234,94 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     }
 
     // For Android 11+, check MANAGE_EXTERNAL_STORAGE if needed
-    
-      //await Permission.manageExternalStorage.request();
-    
+
+    // await Permission.manageExternalStorage.request();
   }
 
-  @override
-  void dispose() {
+  @override void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
-	Future<void> _toggleRecording() async {
-		try {
-		  // Check if all required permissions are granted
-		  bool hasPermissions = await Permission.camera.isGranted &&
-        await Permission.microphone.isGranted &&
-        (await Permission.storage.isGranted ||
-            await Permission.photos.isGranted);
+  Future<void> _toggleRecording() async {
+    try {
+      // Check if all required permissions are granted
+      bool hasPermissions = await Permission.camera.isGranted &&
+                            await Permission.microphone.isGranted &&
+                            (await Permission.storage.isGranted ||
+                             await Permission.photos.isGranted);
 
-		  if (!hasPermissions) {
-			ScaffoldMessenger.of(context).showSnackBar(
-			  const SnackBar(
-				  content: Text('Please grant camera, microphone, and storage permissions')),
-			);
-			await _requestPermissions();
-			return;
-		  }
-
-		  if (isRecording) {
-			final file = await _controller.stopVideoRecording();
-			setState(() {
-			  isRecording = false;
-			  videoPath = file.path;
-			});
-			if (Platform.isAndroid) {
-        // Request Manage External Storage permission for Android 11 and above
-        await Permission.manageExternalStorage.request();
+      if (!hasPermissions) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content
+                : Text(
+                    'Please grant camera, microphone, and storage permissions')), );
+        await _requestPermissions();
+        return;
       }
 
-      await saveVideoToGallery(videoPath);
-			
+      if (isRecording) {
+        final file = await _controller.stopVideoRecording();
+        setState(() {
+          isRecording = false;
+          videoPath = file.path;
+        });
+        if (Platform.isAndroid) {
+          // Request Manage External Storage permission for Android 11 and above
+          await Permission.manageExternalStorage.request();
+        }
 
-			
-		  } else {
-			final directory = await getTemporaryDirectory(); // Use temporary directory
-			final videoFile = '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-			await _controller.startVideoRecording();
-			setState(() {
-			  isRecording = true;
-			  videoPath = videoFile;
-			});
-		  }
-		} catch (e) {
-		  ScaffoldMessenger.of(context).showSnackBar(
-			SnackBar(content: Text('Error during recording: $e')),
-		  );
-		}
-	}  
+        await saveVideoToGallery(videoPath);
 
+      } else {
+        final directory =
+            await getTemporaryDirectory();  // Use temporary directory
+        final videoFile =
+            '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.mp4';
+        await _controller.startVideoRecording();
+        setState(() {
+          isRecording = true;
+          videoPath = videoFile;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content
+                   : Text('Error during recording: $e')), );
+    }
+  }
 
-  @override
-  Widget build(BuildContext context) {
+  @override Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                CameraPreview(_controller),
-                CustomPaint(
-                  painter: FigurePainter(figureData: widget.figureData),
-                ),
-                Positioned(
-                  bottom: 20,
-                  right: 20,
-                  child: IconButton(
-                    icon: Icon(
-                      isRecording ? Icons.stop : Icons.videocam,
-                      color: Colors.red,
-                      size: 50,
-                    ),
-                    onPressed: _toggleRecording,
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
-    );
+        body
+        : FutureBuilder<void>(
+              future
+              : _initializeControllerFuture, builder
+              : (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Stack(
+                      fit
+                      : StackFit.expand, children
+                      : [
+                        CameraPreview(_controller),
+                        CustomPaint(painter
+                                    : FigurePainter(figureData
+                                                    : widget.figureData), ),
+                        Positioned(
+                            bottom : 20, right : 20, child
+                            : IconButton(icon
+                                         : Icon(isRecording ? Icons.stop
+                                                            : Icons.videocam,
+                                                color
+                                                : Colors.red, size : 50, ),
+                                           onPressed
+                                         : _toggleRecording, ), ),
+                      ], );
+                } else {
+                  return const Center(child : CircularProgressIndicator());
+                }
+              }, ), );
   }
 }
 
@@ -342,31 +330,32 @@ class FigurePainter extends CustomPainter {
 
   FigurePainter({required this.figureData});
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.blue // Border color
-      ..style = PaintingStyle.stroke  // Ensure only the border is drawn
-      ..strokeWidth = 4.0; // Border width, can be adjusted
+  @override void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()..color = Colors
+                                             .blue  // Border color
+                                             ..style =
+        PaintingStyle
+            .stroke               // Ensure only the border is drawn
+            ..strokeWidth = 4.0;  // Border width, can be adjusted
 
-    final String? figureType = figureData['figure'] as String?;
+    final String ? figureType = figureData['figure'] as String ? ;
 
     if (figureType == 'circle') {
-      final double centerX = figureData['centerX'] as double? ?? 0.0;
-      final double centerY = figureData['centerY'] as double? ?? 0.0;
-      final double radius = figureData['radius'] as double? ?? 50.0;
+      final double centerX = figureData['centerX'] as double ? ? ? 0.0;
+      final double centerY = figureData['centerY'] as double ? ? ? 0.0;
+      final double radius = figureData['radius'] as double ? ? ? 50.0;
 
       canvas.drawCircle(Offset(centerX, centerY), radius, paint);
     } else if (figureType == 'rectangle') {
-      final double upperLeftX = figureData['upperLeftX'] as double? ?? 0.0;
-      final double upperLeftY = figureData['upperLeftY'] as double? ?? 0.0;
-      final double width = figureData['width'] as double? ?? 100.0;
-      final double height = figureData['height'] as double? ?? 100.0;
+      final double upperLeftX = figureData['upperLeftX'] as double ? ? ? 0.0;
+      final double upperLeftY = figureData['upperLeftY'] as double ? ? ? 0.0;
+      final double width = figureData['width'] as double ? ? ? 100.0;
+      final double height = figureData['height'] as double ? ? ? 100.0;
 
       Rect rect = Rect.fromLTWH(upperLeftX, upperLeftY, width, height);
       canvas.drawRect(rect, paint);
+    }
   }
+  @override bool shouldRepaint(CustomPainter oldDelegate) = > false;
 }
-    @override
-    bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
+
