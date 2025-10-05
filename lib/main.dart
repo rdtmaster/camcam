@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
 
 
 import 'package:permission_handler/permission_handler.dart';
@@ -267,7 +268,11 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			  isRecording = false;
 			  videoPath = file.path;
 			});
-			await Share.shareFiles([file.path], text: 'Check out this video!');
+			final params = ShareParams(
+				text: 'Great picture',
+				files: [XFile(videoPath)],
+			);
+			await SharePlus.instance.share(params);
         if (Platform.isAndroid) {
                 // Request Manage External Storage permission for Android 11 and above
                 await Permission.manageExternalStorage.request();
