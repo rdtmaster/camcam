@@ -95,11 +95,11 @@ class _CameraHomeState extends State<CameraHome> {
               ),
               if (selectedFigure == 'circle') ...[
                 const Text('Center X:'),
-                TextField(controller: centerXController),
+                TextField(controller: centerXController, keyboardType: TextInputType.number),
                 const Text('Center Y:'),
-                TextField(controller: centerYController),
+                TextField(controller: centerYController, keyboardType: TextInputType.number),
                 const Text('Radius:'),
-                TextField(controller: radiusController),
+                TextField(controller: radiusController, keyboardType: TextInputType.number),
               ] else if (selectedFigure == 'rectangle') ...[
                 const Text('Upper Left X:'),
                 TextField(controller: upperLeftXController),
@@ -203,7 +203,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = CameraController(widget.camera, ResolutionPreset.high);
+    _controller = CameraController(widget.camera, ResolutionPreset.veryHigh);
     _initializeControllerFuture = _controller.initialize();
 	_requestPermissions();
   }
