@@ -102,11 +102,11 @@ class _CameraHomeState extends State<CameraHome> {
                 TextField(controller: radiusController, keyboardType: TextInputType.number),
               ] else if (selectedFigure == 'rectangle') ...[
                 const Text('Upper Left X:'),
-                TextField(controller: upperLeftXController),
+                TextField(controller: upperLeftXController, keyboardType: TextInputType.number),
                 const Text('Upper Left Y:'),
-                TextField(controller: upperLeftYController),
+                TextField(controller: upperLeftYController, keyboardType: TextInputType.number),
                 const Text('Width:'),
-                TextField(controller: widthController),
+                TextField(controller: widthController, keyboardType: TextInputType.number),
 
                 const Text('Height:'),
                 TextField(controller: heightController),
@@ -246,7 +246,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			  videoPath = renamedFile.path;
 			});
 			final params = ShareParams(
-				text: 'Share result',
+				text: 'Result',
 				files: [XFile(videoPath)],
 			);
 			await SharePlus.instance.share(params);
