@@ -264,9 +264,11 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 
     if (isRecording) {
             final file = await _controller.stopVideoRecording();
+			final newFileName = file.path.replaceAll('.temp', '.mp4');
+			final renamedFile = await file.rename(newFileName);
 			setState(() {
 			  isRecording = false;
-			  videoPath = file.path;
+			  videoPath = renamedFile.path;
 			});
 			final params = ShareParams(
 				text: 'Great picture',
