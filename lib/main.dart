@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:cross_file/cross_file.dart';
 
@@ -263,7 +262,9 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 
 
     if (isRecording) {
-            final file = await _controller.stopVideoRecording();
+            final XFile xf = await _controller.stopVideoRecording();
+			final file = 
+			final File videoOutputFile = File(xf.path);
 			final newFileName = file.path.replaceAll('.temp', '.mp4');
 			final renamedFile = await file.rename(newFileName);
 			setState(() {
