@@ -246,7 +246,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			  videoPath = renamedFile.path;
 			});
 			final params = ShareParams(
-				text: 'Great picture',
+				text: 'Share result',
 				files: [XFile(videoPath)],
 			);
 			await SharePlus.instance.share(params);
