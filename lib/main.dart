@@ -264,8 +264,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 
     if (isRecording) {
             final XFile xf = await _controller.stopVideoRecording();
-			final file = 
-			final File videoOutputFile = File(xf.path);
+			final File file = File(xf.path);
 			final newFileName = file.path.replaceAll('.temp', '.mp4');
 			final renamedFile = await file.rename(newFileName);
 			setState(() {
