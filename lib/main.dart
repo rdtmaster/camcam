@@ -10,30 +10,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:android_intent_plus/flag.dart';
 
-Future<void> saveVideoToGallery(String videoPath) async {
-  final fileName = videoPath.split('/').last;
-  final videoFile = File(videoPath);
-
-  if (await Permission.manageExternalStorage.isGranted) {
-    try {
-      final directory = Directory('/storage/emulated/0/Movies');
-	  if (!(await directory.exists())) {
-		await directory.create(recursive: true);
-      }
-	  
-	  final newPath = '${directory.path}/$fileName';
-	  final videoFile = File(videoPath);
-      await videoFile.copy(newPath);
-	  
-      
-    } catch (e) {
-      print('err $e');
-    }
-  } else {
-    print('Permission denied to manage external storage');
-  }
-}
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -257,9 +233,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
     try {
 		  // Check if all required permissions are granted
     bool hasPermissions = await Permission.camera.isGranted &&
-        await Permission.microphone.isGranted &&
-        (await Permission.storage.isGranted ||
-        await Permission.photos.isGranted);
+        await Permission.microphone.isGranted;
 
 
     if (isRecording) {
@@ -276,12 +250,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 				files: [XFile(videoPath)],
 			);
 			await SharePlus.instance.share(params);
-        if (Platform.isAndroid) {
-                // Request Manage External Storage permission for Android 11 and above
-                await Permission.manageExternalStorage.request();
-        }
 
-        
 
 	  } else {
 		final directory = await getApplicationDocumentsDirectory();
