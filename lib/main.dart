@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:cross_file/cross_file.dart';
 
@@ -281,7 +282,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
                 await Permission.manageExternalStorage.request();
         }
 
-        await saveVideoToGallery(videoPath);
+        
 
 	  } else {
 		final directory = await getApplicationDocumentsDirectory();
