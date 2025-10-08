@@ -311,8 +311,9 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 
 class FigurePainter extends CustomPainter {
   final Map<String, Object> figureData;
+  final Size previewSize; // Add preview size as an input
 
-  FigurePainter({required this.figureData});
+  FigurePainter({required this.figureData, required this.previewSize});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -323,23 +324,38 @@ class FigurePainter extends CustomPainter {
 
     final String? figureType = figureData['figure'] as String?;
 
+    // Calculate scale factors based on the actual preview size
+    double scaleX = size.width / previewSize.width;
+    double scaleY = size.height / previewSize.height;
+
     if (figureType == 'circle') {
       final double centerX = figureData['centerX'] as double? ?? 0.0;
       final double centerY = figureData['centerY'] as double? ?? 0.0;
       final double radius = figureData['radius'] as double? ?? 50.0;
 
-      canvas.drawCircle(Offset(centerX, centerY), radius, paint);
+      // Scale coordinates based on the preview size
+      final scaledCenterX = centerX * scaleX;
+      final scaledCenterY = centerY * scaleY;
+      final scaledRadius = radius * scaleX; // Assuming the circle scales uniformly
+
+      canvas.drawCircle(Offset(scaledCenterX, scaledCenterY), scaledRadius, paint);
     } else if (figureType == 'rectangle') {
       final double upperLeftX = figureData['upperLeftX'] as double? ?? 0.0;
       final double upperLeftY = figureData['upperLeftY'] as double? ?? 0.0;
       final double width = figureData['width'] as double? ?? 100.0;
       final double height = figureData['height'] as double? ?? 100.0;
 
-      Rect rect = Rect.fromLTWH(upperLeftX, upperLeftY, width, height);
-      canvas.drawRect(rect, paint);
-  }
-}
-    @override
-    bool shouldRepaint(CustomPainter oldDelegate) => false;
-}
+      // Scale coordinates based on the preview size
+      final scaledUpperLeftX = upperLeftX * scaleX;
+      final scaledUpperLeftY = upperLeftY * scaleY;
+      final scaledWidth = width * scaleX;
+      final scaledHeight = height * scaleY;
 
+      Rect rect = Rect.fromLTWH(scaledUpperLeftX, scaledUpperLeftY, scaledWidth, scaledHeight);
+      canvas.drawRect(rect, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
