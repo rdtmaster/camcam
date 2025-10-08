@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 import 'package:cross_file/cross_file.dart';
+import 'package:gal/gal.dart';
 
 
 import 'package:permission_handler/permission_handler.dart';
@@ -245,6 +246,8 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			  isRecording = false;
 			  videoPath = renamedFile.path;
 			});
+			await Gal.requestAccess();
+			await Gal.putVideo('$videoPath', album: 'alb1')
 			final params = ShareParams(
 				text: 'Result',
 				files: [XFile(videoPath)],
