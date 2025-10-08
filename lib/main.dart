@@ -247,7 +247,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
 			  videoPath = renamedFile.path;
 			});
 			await Gal.requestAccess();
-			await Gal.putVideo('$videoPath', album: 'alb1')
+			await Gal.putVideo('$videoPath', album: 'alb1');
 			final params = ShareParams(
 				text: 'Result',
 				files: [XFile(videoPath)],
