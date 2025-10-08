@@ -5,8 +5,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <!-- Gal: For supporting API <= 29 :Gal-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-                 android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:label="app1"
         android:name="${applicationName}"
