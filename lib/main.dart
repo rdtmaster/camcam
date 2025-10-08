@@ -284,7 +284,10 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
               children: [
                 CameraPreview(_controller),
                 CustomPaint(
-                  painter: FigurePainter(figureData: widget.figureData),
+                   painter: FigurePainter(
+					   figureData: widget.figureData,
+					   previewSize: _controller.value.previewSize!,
+				   ),
                 ),
                 Positioned(
                   bottom: 20,
@@ -293,7 +296,7 @@ class _CameraPreviewScreenState extends State<CameraPreviewScreen> {
                     icon: Icon(
                       isRecording ? Icons.stop : Icons.videocam,
                       color: Colors.red,
-                      size: 50,
+                      size: 57,
                     ),
                     onPressed: _toggleRecording,
                   ),
